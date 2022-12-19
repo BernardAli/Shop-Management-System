@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+	<div class="header">{{header}}</div>
+
+<div class="card" >
+  <div class="card-body">
+    <h5 class="card-title">{% if  queryset.balance < queryset.impriest_level%}
+      <div style="color:red">GHS {{ queryset.balance }}</div>
+      {% else %}
+        GHS {{ queryset.balance }}
+      {% endif%}
+    </h5>
+    <h6 class="card-subtitle mb-2 text-muted">As at: {{ queryset.last_updated }}</h6>
+    <a href="{% url 'received_cash' queryset.id %}" class="card-link btn btn-primary">Receive Cash</a>
+    <a href="{% url 'issue_cash' queryset.id %}" class="card-link btn btn-primary">Pay Cash</a>
+    <a href="" class="card-link btn btn-primary">Cash Book History</a>
+  </div>
+</div>
+{% endblock %}

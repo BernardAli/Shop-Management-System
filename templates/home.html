@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="container-fluid py-5">
+        <div class="row">
+  <div class="col-sm-6">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Inventory and Sales</h5>
+        <p class="card-text">This card takes you to the inventory and sales</p>
+        <a href="{% url 'list_items' %}" class="btn btn-primary">Go>></a>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Cash Book</h5>
+        <p class="card-text">This takes you to the cash book.</p>
+        <a href="{% url 'cash_item' %}" class="btn btn-primary">Go>></a>
+      </div>
+    </div>
+  </div>
+</div>
+    </div>
+{% endblock %}

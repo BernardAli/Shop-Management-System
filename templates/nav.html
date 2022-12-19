@@ -1,0 +1,30 @@
+<nav class="navbar navbar-expand-md fixed-top" style="background-color: #e3f2fd;">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'home' %}">Kelvin Shop <small>v1.0</small></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+          <ul class="navbar-nav me-auto mb-2 mb-md-0">
+            <li class="nav-item">
+              <a class="nav-link" aria-current="page" href="{% url 'home' %}">Home</a>
+            </li>
+            {% if request.user.is_authenticated %}
+              <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="{% url 'list_items' %}">Inventory</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="{% url 'cash_item' %}">Cash Book</a>
+              </li>
+            {% endif %}
+          </ul>
+          <ul class="navbar-nav">
+              {% if request.user.is_authenticated %}
+              <li><a href="/accounts/logout"><button class="btn btn-danger">{{ user }} | Logout</button></a></li>
+              {% else %}
+              <li><a href="/accounts/login">Login</a></li>
+              {% endif %}
+          </ul>
+        </div>
+      </div>
+    </nav>
