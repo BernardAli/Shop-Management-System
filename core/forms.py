@@ -81,10 +81,16 @@ class IssueCashForm(forms.ModelForm):
 class ReceiveCashForm(forms.ModelForm):
     class Meta:
         model = Cash
-        fields =["detail", "amount_in"]
+        fields = ["detail", "amount_in"]
 
 
 class CashSearchForm(forms.ModelForm):
     class Meta:
         model = Cash
         fields = ["detail"]
+
+
+class ImpriestLevelForm(forms.ModelForm):
+    class Meta:
+        model = Cash
+        fields = ['impriest_level']

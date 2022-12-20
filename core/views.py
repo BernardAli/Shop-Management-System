@@ -6,7 +6,7 @@ from django.core.paginator import Paginator
 from django.shortcuts import render, HttpResponse, redirect
 
 from core.forms import StockSearchForm, StockUpdateForm, StockCreateForm, ReorderLevelForm, ReceiveForm, IssueForm, \
-    CashSearchForm, IssueCashForm, ReceiveCashForm, StockHistorySearchForm
+    CashSearchForm, IssueCashForm, ReceiveCashForm, StockHistorySearchForm, ImpriestLevelForm
 from core.models import Stock, Cash, StockHistory
 
 
@@ -273,3 +273,116 @@ def list_history(request):
             "queryset": queryset,
         }
     return render(request, "list_history.html", context)
+
+
+@login_required
+def cash_item(request):
+
+    queryset = Cash.objects.all()
+    context = {
+        "queryset": queryset,
+    }
+
+    return render(request, "cash_item.html", context)
+
+
+@login_required
+def cash_detail(request, pk):
+    queryset = Cash.objects.get(id=pk)
+    context = {
+        "queryset": queryset,
+    }
+    return render(request, "cash_detail.html", context)
+
+
+@login_required
+def impriest_level(request, pk):
+    queryset = Cash.objects.get(id=pk)
+    form = ImpriestLevelForm(request.POST or None, instance=queryset)
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.save()
+        messages.success(request, "Reorder level for " + str(instance.category) + " is updated to " + str(
+            instance.impriest_level))
+
+        return redirect("cash_items")
+    context = {
+        "instance": queryset,
+        "form": form,
+    }
+    return render(request, "add_item.html", context)
+
+
+@login_required
+def issue_cash(request, pk):
+    queryset = Cash.objects.get(id=pk)
+    form = IssueCashForm(request.POST or None, instance=queryset)
+    if form.is_valid():
+        instance = form.save(commit=False)
+        if instance.amount_out > instance.balance:
+            messages.success(request, "Not Enough Cash")
+        else:
+            # instance.purchased_quantity = 0
+            instance.balance -= instance.amount_out
+            instance.issue_by = str(request.user)
+            messages.success(request, "Issued SUCCESSFULLY. " + str(instance.balance) + " " + str(
+                instance.category) + " balance left")
+            instance.save()
+            # issue_history = StockHistory(
+            #     last_updated=instance.last_updated,
+            #     category_id=instance.category_id,
+            #     item_name=instance.item_name,
+            #     quantity=instance.quantity,
+            #     sale_to=instance.sale_to,
+            #     sale_by=instance.sale_by,
+            #     sale_quantity=instance.sale_quantity,
+            #     unit_sale_price=instance.unit_sale_price,
+            #     total_sale_price=instance.total_sale_price,
+            # )
+            # issue_history.save()
+
+        return redirect('/cash_detail/' + str(instance.id))
+    # return HttpResponseRedirect(instance.get_absolute_url())
+
+    context = {
+        "queryset": queryset,
+        "form": form,
+        "username": 'Issue By: ' + str(request.user),
+    }
+    return render(request, "add_item.html", context)
+
+
+@login_required
+def receive_cash(request, pk):
+    queryset = Cash.objects.get(id=pk)
+    form = ReceiveCashForm(request.POST or None, instance=queryset)
+    if form.is_valid():
+        instance = form.save(commit=False)
+        # instance.purchased_quantity = 0
+        instance.balance += instance.amount_in
+        instance.recipient = str(request.user)
+        messages.success(request, "Received SUCCESSFULLY. " + str(instance.balance) + " " + str(
+            instance.category) + " balance left")
+        instance.save()
+        # issue_history = StockHistory(
+        #     last_updated=instance.last_updated,
+        #     category_id=instance.category_id,
+        #     item_name=instance.item_name,
+        #     quantity=instance.quantity,
+        #     sale_to=instance.sale_to,
+        #     sale_by=instance.sale_by,
+        #     sale_quantity=instance.sale_quantity,
+        #     unit_sale_price=instance.unit_sale_price,
+        #     total_sale_price=instance.total_sale_price,
+        # )
+        # issue_history.save()
+
+        return redirect('/cash_detail/' + str(instance.id))
+    # return HttpResponseRedirect(instance.get_absolute_url())
+
+    context = {
+        "queryset": queryset,
+        "form": form,
+        "username": 'Received By: ' + str(request.user),
+    }
+    return render(request, "add_item.html", context)

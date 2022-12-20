@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 
 # Create your models here.
@@ -69,16 +70,8 @@ CASH_CHOICE = (
 )
 
 
-class CashCategory(models.Model):
-    name = models.CharField(max_length=50, blank=True, null=True, choices=CASH_CHOICE)
-    description = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return self.name
-
-
 class Cash(models.Model):
-    category = models.ForeignKey(CashCategory, on_delete=models.CASCADE, blank=True)
+    category = models.CharField(max_length=50, blank=True, null=True, choices=CASH_CHOICE)
     recipient = models.CharField(max_length=50)
     detail = models.TextField(max_length=50)
     created_on = models.DateTimeField(auto_now_add=True)
@@ -91,4 +84,4 @@ class Cash(models.Model):
     last_updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.recipient} - {self.balance}"
+        return f"{self.category}"

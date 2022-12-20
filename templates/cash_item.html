@@ -5,17 +5,28 @@
 	<div class="header">{{header}}</div>
 
 <div class="card" >
-  <div class="card-body">
-    <h5 class="card-title">{% if  queryset.balance < queryset.impriest_level%}
-      <div style="color:red">GHS {{ queryset.balance }}</div>
-      {% else %}
-        GHS {{ queryset.balance }}
-      {% endif%}
-    </h5>
-    <h6 class="card-subtitle mb-2 text-muted">As at: {{ queryset.last_updated }}</h6>
-    <a href="{% url 'received_cash' queryset.id %}" class="card-link btn btn-primary">Receive Cash</a>
-    <a href="{% url 'issue_cash' queryset.id %}" class="card-link btn btn-primary">Pay Cash</a>
-    <a href="" class="card-link btn btn-primary">Cash Book History</a>
+  <div class="display_table">
+			<table class='table'>
+				<thead>
+				  <tr>
+					<th>COUNT</th>
+					<th>CATEGORY</th>
+					<th>BALANCE</th>
+					<th>UPDATED AT</th>
+				  </tr>
+				</thead>
+			  {% for instance in queryset %}
+				  <tr>
+					<td>{{forloop.counter}}</td>
+					  <td><a href="{% url 'cash_detail' instance.id %}">{{instance.category}}</a></td>
+                    <td>{% if instance.balance <= instance.impriest_level %}
+                          <div style="background-color: orange;">{{instance.balance}}</div>
+                          {% else %}{{instance.balance}}
+                          {% endif %}</td>
+				  	<td>{{instance.last_updated|date:"d M, h:i a"}}</td>
+				  </tr>
+			  {% endfor %}
+			</table>
   </div>
 </div>
 {% endblock %}
