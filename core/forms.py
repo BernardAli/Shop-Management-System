@@ -81,7 +81,7 @@ class IssueCashForm(forms.ModelForm):
 class ReceiveCashForm(forms.ModelForm):
     class Meta:
         model = Cash
-        fields = ["detail", "amount_in"]
+        fields = ["issue_by", "detail", "amount_in"]
 
 
 class CashSearchForm(forms.ModelForm):
@@ -94,3 +94,27 @@ class ImpriestLevelForm(forms.ModelForm):
     class Meta:
         model = Cash
         fields = ['impriest_level']
+
+
+class CashHistorySearchForm(forms.ModelForm):
+    export_to_CSV = forms.BooleanField(required=False)
+    start_date = forms.DateTimeField(widget=forms.widgets.DateInput(attrs={'type': 'date'}),
+                                     required=False, initial=timezone.now)
+    end_date = forms.DateTimeField(widget=forms.widgets.DateInput(attrs={'type': 'date'}),
+                                   required=False, initial=timezone.now)
+
+    class Meta:
+        model = Cash
+        fields = ['category', 'detail', 'export_to_CSV', 'start_date', 'end_date']
+
+
+class CashHistorySearchForm(forms.ModelForm):
+    export_to_CSV = forms.BooleanField(required=False)
+    start_date = forms.DateTimeField(widget=forms.widgets.DateInput(attrs={'type': 'date'}),
+                                     required=False, initial=timezone.now)
+    end_date = forms.DateTimeField(widget=forms.widgets.DateInput(attrs={'type': 'date'}),
+                                   required=False, initial=timezone.now)
+
+    class Meta:
+        model = Cash
+        fields = ['category', 'export_to_CSV', 'start_date', 'end_date']

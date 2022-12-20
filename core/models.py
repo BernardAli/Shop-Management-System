@@ -85,3 +85,19 @@ class Cash(models.Model):
 
     def __str__(self):
         return f"{self.category}"
+
+
+class CashHistory(models.Model):
+    category = models.CharField(max_length=50, blank=True, null=True, choices=CASH_CHOICE)
+    recipient = models.CharField(max_length=50, blank=True, null=True)
+    detail = models.TextField(max_length=50, blank=True, null=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+    amount_in = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    amount_out = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    impriest_level = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    balance = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    issue_by = models.CharField(max_length=50, blank=True, null=True)
+    last_updated = models.DateTimeField(auto_now=True, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.category}"

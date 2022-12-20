@@ -6,8 +6,8 @@ from django.core.paginator import Paginator
 from django.shortcuts import render, HttpResponse, redirect
 
 from core.forms import StockSearchForm, StockUpdateForm, StockCreateForm, ReorderLevelForm, ReceiveForm, IssueForm, \
-    CashSearchForm, IssueCashForm, ReceiveCashForm, StockHistorySearchForm, ImpriestLevelForm
-from core.models import Stock, Cash, StockHistory
+    CashSearchForm, IssueCashForm, ReceiveCashForm, StockHistorySearchForm, ImpriestLevelForm, CashHistorySearchForm
+from core.models import Stock, Cash, StockHistory, CashHistory
 
 
 # Create your views here.
@@ -328,18 +328,17 @@ def issue_cash(request, pk):
             messages.success(request, "Issued SUCCESSFULLY. " + str(instance.balance) + " " + str(
                 instance.category) + " balance left")
             instance.save()
-            # issue_history = StockHistory(
-            #     last_updated=instance.last_updated,
-            #     category_id=instance.category_id,
-            #     item_name=instance.item_name,
-            #     quantity=instance.quantity,
-            #     sale_to=instance.sale_to,
-            #     sale_by=instance.sale_by,
-            #     sale_quantity=instance.sale_quantity,
-            #     unit_sale_price=instance.unit_sale_price,
-            #     total_sale_price=instance.total_sale_price,
-            # )
-            # issue_history.save()
+            cash_issue_history = CashHistory(
+                last_updated=instance.last_updated,
+                category=instance.category,
+                detail=instance.detail,
+                recipient=instance.recipient,
+                issue_by=instance.issue_by,
+                amount_out=instance.amount_out,
+                created_on=instance.created_on,
+                balance=instance.balance,
+            )
+            cash_issue_history.save()
 
         return redirect('/cash_detail/' + str(instance.id))
     # return HttpResponseRedirect(instance.get_absolute_url())
@@ -364,18 +363,17 @@ def receive_cash(request, pk):
         messages.success(request, "Received SUCCESSFULLY. " + str(instance.balance) + " " + str(
             instance.category) + " balance left")
         instance.save()
-        # issue_history = StockHistory(
-        #     last_updated=instance.last_updated,
-        #     category_id=instance.category_id,
-        #     item_name=instance.item_name,
-        #     quantity=instance.quantity,
-        #     sale_to=instance.sale_to,
-        #     sale_by=instance.sale_by,
-        #     sale_quantity=instance.sale_quantity,
-        #     unit_sale_price=instance.unit_sale_price,
-        #     total_sale_price=instance.total_sale_price,
-        # )
-        # issue_history.save()
+        cash_receive_history = CashHistory(
+            last_updated=instance.last_updated,
+            category=instance.category,
+            recipient=instance.recipient,
+            detail=instance.detail,
+            issue_by=instance.issue_by,
+            amount_in=instance.amount_in,
+            created_on=instance.created_on,
+            balance=instance.balance,
+        )
+        cash_receive_history.save()
 
         return redirect('/cash_detail/' + str(instance.id))
     # return HttpResponseRedirect(instance.get_absolute_url())
@@ -386,3 +384,65 @@ def receive_cash(request, pk):
         "username": 'Received By: ' + str(request.user),
     }
     return render(request, "add_item.html", context)
+
+
+@login_required
+def cash_history(request):
+    header = 'CASH HISTORY'
+    queryset = CashHistory.objects.all()
+    paginator = Paginator(queryset, 15)
+    page_number = request.GET.get('page')
+    queryset = paginator.get_page(page_number)
+    form = CashHistorySearchForm(request.POST or None)
+    context = {
+        "header": header,
+        "queryset": queryset,
+        "form": form,
+    }
+    if request.method == 'POST':
+
+        queryset = CashHistory.objects.filter(
+            category__icontains=form['category'].value(),
+            last_updated__range=[
+                form['start_date'].value(),
+                form['end_date'].value()
+            ]
+        )
+
+
+        if form['export_to_CSV'].value() == True:
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="Stock History.csv"'
+            writer = csv.writer(response)
+            writer.writerow(
+                ['CATEGORY',
+                 'RECIPIENT',
+                 'DETAIL',
+                 'RECEIVED AMOUNT',
+                 'PAID AMOUNT',
+                 'BALANCE',
+                 'ISSUED BY',
+                 'LAST UPDATED'])
+            instance = queryset
+            for stock in instance:
+                writer.writerow(
+                    [stock.category,
+                     stock.recipient,
+                     stock.detail,
+                     stock.amount_in,
+                     stock.amount_out,
+                     stock.balance,
+                     stock.issue_by,
+                     stock.last_updated])
+            return response
+
+        paginator = Paginator(queryset, 15)
+        page_number = request.GET.get('page')
+        queryset = paginator.get_page(page_number)
+
+        context = {
+            "form": form,
+            "header": header,
+            "queryset": queryset,
+        }
+    return render(request, "cash_history.html", context)

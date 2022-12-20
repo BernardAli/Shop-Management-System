@@ -18,4 +18,5 @@ urlpatterns = [
     path('impriest_level/<str:pk>/', views.impriest_level, name="impriest_level"),
     path('issue_cash/<str:pk>/', views.issue_cash, name="issue_cash"),
     path('receive_cash/<str:pk>/', views.receive_cash, name="receive_cash"),
+    path('cash_history/', views.cash_history, name='cash_history'),
 ]
