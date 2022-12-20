@@ -1,11 +1,12 @@
 from django.contrib import admin
-from .models import Stock, Category, Cash
+from .models import Stock, Category, Cash, StockHistory, CashCategory
 from .forms import StockCreateForm
 
 
 admin.site.register(Category)
 admin.site.register(Cash)
-# admin.site.register(StockHistories)
+admin.site.register(StockHistory)
+admin.site.register(CashCategory)
 
 
 class StockCreateAdmin(admin.ModelAdmin):

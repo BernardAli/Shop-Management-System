@@ -11,7 +11,5 @@ urlpatterns = [
     path('reorder_level/<str:pk>/', views.reorder_level, name="reorder_level"),
     path('issue_items/<str:pk>/', views.issue_items, name="issue_items"),
     path('receive_items/<str:pk>/', views.receive_items, name="receive_items"),
-    path('cash_items/', views.cash_item, name='cash_item'),
-    path('issue_cash/<str:pk>/', views.issue_cash, name="issue_cash"),
-    path('received_cash/<str:pk>/', views.receive_cash, name="received_cash"),
+    path('list_history/', views.list_history, name='list_history'),
 ]

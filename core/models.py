@@ -37,7 +37,48 @@ class Stock(models.Model):
         return self.item_name
 
 
+class StockHistory(models.Model):
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True)
+    item_name = models.CharField(max_length=50, blank=True, null=True)
+    item_description = models.TextField(blank=True, null=True)
+    quantity = models.IntegerField(default='0', blank=True, null=True)
+    purchased_quantity = models.IntegerField(default='0', blank=True, null=True)
+    purchased_by = models.CharField(max_length=50, blank=True, null=True)
+    purchased_from = models.CharField(max_length=50, blank=True, null=True)
+    unit_purchase_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    total_purchase_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    sale_quantity = models.IntegerField(default='0', blank=True, null=True)
+    sale_by = models.CharField(max_length=50, blank=True, null=True)
+    sale_to = models.CharField(max_length=50, blank=True, null=True)
+    unit_sale_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    total_sale_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    phone_number = models.CharField(max_length=50, blank=True, null=True)
+    created_by = models.CharField(max_length=50, blank=True, null=True)
+    reorder_level = models.IntegerField(default='0', blank=True, null=True)
+    created_on = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    expiry = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    last_updated = models.DateTimeField(auto_now=True, blank=True, null=True)
+
+    def __str__(self):
+        return self.item_name
+
+
+CASH_CHOICE = (
+    ('Bank', 'Bank'),
+    ('Cash', 'Cash'),
+)
+
+
+class CashCategory(models.Model):
+    name = models.CharField(max_length=50, blank=True, null=True, choices=CASH_CHOICE)
+    description = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+
 class Cash(models.Model):
+    category = models.ForeignKey(CashCategory, on_delete=models.CASCADE, blank=True)
     recipient = models.CharField(max_length=50)
     detail = models.TextField(max_length=50)
     created_on = models.DateTimeField(auto_now_add=True)
@@ -50,4 +91,4 @@ class Cash(models.Model):
     last_updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.recipient} - {self.amount_out}"
+        return f"{self.recipient} - {self.balance}"
